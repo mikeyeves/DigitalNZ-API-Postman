@@ -1,0 +1,687 @@
+{
+  "info": {
+    "_postman_id": "ba209ba6-599e-419b-a407-9240c72a8920",
+    "name": "DigitalNZ API v3 (incl. Papers Past)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "DigitalNZ Records API v3 — search 30M+ items from New Zealand libraries, archives, museums and media, including **Papers Past** (NZ newspapers 1839–1980s, full text). No key needed for public content (unauthenticated requests share a global rate limit); an optional free key gives better throughput. Use source_url (not landing_url) when linking.\n\nDocs: https://digitalnz.org/developers/api-docs-v3 · OpenAPI: https://app.swaggerhub.com/apis-docs/DigitalNZ/Records/3"
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "item": [
+    {
+      "name": "★ Search",
+      "id": "8e743e1d-afae-4f17-965a-64454a6523b7",
+      "item": [
+        {
+          "name": "Search records (all parameters)",
+          "id": "58fb664e-3b0c-43ca-b5dd-70f05f4f5770",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{dnz_api}}/records.json?text={{query}}&per_page=50",
+              "host": [
+                "{{dnz_api}}"
+              ],
+              "path": [
+                "records.json"
+              ],
+              "query": [
+                {
+                  "key": "text",
+                  "value": "{{query}}",
+                  "disabled": false,
+                  "description": "Search terms"
+                },
+                {
+                  "key": "per_page",
+                  "value": "50",
+                  "disabled": false,
+                  "description": "max 100"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "disabled": true,
+                  "description": ""
+                },
+                {
+                  "key": "and[display_collection][]",
+                  "value": "",
+                  "disabled": true,
+                  "description": "e.g. Papers Past"
+                },
+                {
+                  "key": "and[category][]",
+                  "value": "",
+                  "disabled": true,
+                  "description": "e.g. Newspapers, Images, Books, Audio, Videos, Manuscripts, Research papers"
+                },
+                {
+                  "key": "and[content_partner][]",
+                  "value": "",
+                  "disabled": true,
+                  "description": ""
+                },
+                {
+                  "key": "and[year][]",
+                  "value": "",
+                  "disabled": true,
+                  "description": "e.g. 1905"
+                },
+                {
+                  "key": "and[decade][]",
+                  "value": "",
+                  "disabled": true,
+                  "description": "e.g. 1900"
+                },
+                {
+                  "key": "and[placename][]",
+                  "value": "",
+                  "disabled": true,
+                  "description": ""
+                },
+                {
+                  "key": "and[creator][]",
+                  "value": "",
+                  "disabled": true,
+                  "description": ""
+                },
+                {
+                  "key": "or[category][]",
+                  "value": "",
+                  "disabled": true,
+                  "description": "any-of filter (repeatable)"
+                },
+                {
+                  "key": "without[category][]",
+                  "value": "",
+                  "disabled": true,
+                  "description": "exclude"
+                },
+                {
+                  "key": "facets",
+                  "value": "",
+                  "disabled": true,
+                  "description": "category,display_collection,creator,placename,year,decade,century,language,content_partner,rights,collection"
+                },
+                {
+                  "key": "facets_per_page",
+                  "value": "10",
+                  "disabled": true,
+                  "description": ""
+                },
+                {
+                  "key": "facets_page",
+                  "value": "1",
+                  "disabled": true,
+                  "description": ""
+                },
+                {
+                  "key": "sort",
+                  "value": "",
+                  "disabled": true,
+                  "description": "date | syndication_date (default relevance)"
+                },
+                {
+                  "key": "direction",
+                  "value": "",
+                  "disabled": true,
+                  "description": "asc | desc"
+                },
+                {
+                  "key": "geo_bbox",
+                  "value": "",
+                  "disabled": true,
+                  "description": "north,west,south,east e.g. -41,174,-42,175"
+                },
+                {
+                  "key": "fields",
+                  "value": "",
+                  "disabled": true,
+                  "description": "comma list or groups default | verbose"
+                },
+                {
+                  "key": "api_key",
+                  "value": "{{dnz_key}}",
+                  "disabled": true,
+                  "description": "Optional — higher throughput & support"
+                }
+              ]
+            },
+            "description": "Searches the DigitalNZ corpus (30M+ items from NZ libraries, archives, museums, media).\n\nDocs: https://digitalnz.org/developers/api-docs-v3 · OpenAPI: https://app.swaggerhub.com/apis-docs/DigitalNZ/Records/3"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let j={};try{j=pm.response.json();}catch(e){}",
+                  "const s=j.search||{};",
+                  "const rows=(s.results||[]).map(r=>[`<a href=\"${r.source_url||r.landing_url||''}\">${(r.title||'').slice(0,140)}</a>`,r.display_date||'',r.display_collection||'',[].concat(r.category||[]).join(', '),r.content_partner&&[].concat(r.content_partner).join(', ')||'',r.id]);",
+                  "pm.visualizer.set(`<style>table{border-collapse:collapse;font:13px sans-serif}td,th{border:1px solid #ccc;padding:4px 8px;vertical-align:top}th{background:#eee}</style><p>{{n}} results</p><table><tr><th>Title</th><th>Date</th><th>Collection</th><th>Category</th><th>Partner</th><th>id</th></tr>{{#each rows}}<tr>{{#each this}}<td>{{{this}}}</td>{{/each}}</tr>{{/each}}</table>`,{rows,n:s.result_count});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "★ Papers Past: Bukovsky",
+          "id": "244bfed0-05cf-4e21-a417-941f909a0394",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{dnz_api}}/records.json?text=Bukovsky&and[display_collection][]=Papers Past&per_page=50",
+              "host": [
+                "{{dnz_api}}"
+              ],
+              "path": [
+                "records.json"
+              ],
+              "query": [
+                {
+                  "key": "text",
+                  "value": "Bukovsky",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "and[display_collection][]",
+                  "value": "Papers Past",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "per_page",
+                  "value": "50",
+                  "disabled": false,
+                  "description": ""
+                }
+              ]
+            },
+            "description": "Papers Past = NZ newspapers 1839–1980s (full text). 2 hits at build time.\n\nDocs: https://digitalnz.org/developers/api-docs-v3 · OpenAPI: https://app.swaggerhub.com/apis-docs/DigitalNZ/Records/3"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let j={};try{j=pm.response.json();}catch(e){}",
+                  "const s=j.search||{};",
+                  "const rows=(s.results||[]).map(r=>[`<a href=\"${r.source_url||r.landing_url||''}\">${(r.title||'').slice(0,140)}</a>`,r.display_date||'',r.display_collection||'',[].concat(r.category||[]).join(', '),r.content_partner&&[].concat(r.content_partner).join(', ')||'',r.id]);",
+                  "pm.visualizer.set(`<style>table{border-collapse:collapse;font:13px sans-serif}td,th{border:1px solid #ccc;padding:4px 8px;vertical-align:top}th{background:#eee}</style><p>{{n}} results</p><table><tr><th>Title</th><th>Date</th><th>Collection</th><th>Category</th><th>Partner</th><th>id</th></tr>{{#each rows}}<tr>{{#each this}}<td>{{{this}}}</td>{{/each}}</tr>{{/each}}</table>`,{rows,n:s.result_count});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "★ Papers Past: Barna",
+          "id": "287f916f-40a6-4a86-9c91-dd78f2241cc3",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{dnz_api}}/records.json?text=Barna&and[display_collection][]=Papers Past&per_page=50&sort=date&direction=asc",
+              "host": [
+                "{{dnz_api}}"
+              ],
+              "path": [
+                "records.json"
+              ],
+              "query": [
+                {
+                  "key": "text",
+                  "value": "Barna",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "and[display_collection][]",
+                  "value": "Papers Past",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "per_page",
+                  "value": "50",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "sort",
+                  "value": "date",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "direction",
+                  "value": "asc",
+                  "disabled": false,
+                  "description": ""
+                }
+              ]
+            },
+            "description": "\n\nDocs: https://digitalnz.org/developers/api-docs-v3 · OpenAPI: https://app.swaggerhub.com/apis-docs/DigitalNZ/Records/3"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let j={};try{j=pm.response.json();}catch(e){}",
+                  "const s=j.search||{};",
+                  "const rows=(s.results||[]).map(r=>[`<a href=\"${r.source_url||r.landing_url||''}\">${(r.title||'').slice(0,140)}</a>`,r.display_date||'',r.display_collection||'',[].concat(r.category||[]).join(', '),r.content_partner&&[].concat(r.content_partner).join(', ')||'',r.id]);",
+                  "pm.visualizer.set(`<style>table{border-collapse:collapse;font:13px sans-serif}td,th{border:1px solid #ccc;padding:4px 8px;vertical-align:top}th{background:#eee}</style><p>{{n}} results</p><table><tr><th>Title</th><th>Date</th><th>Collection</th><th>Category</th><th>Partner</th><th>id</th></tr>{{#each rows}}<tr>{{#each this}}<td>{{{this}}}</td>{{/each}}</tr>{{/each}}</table>`,{rows,n:s.result_count});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "★ Papers Past: Barbarossa, 1905",
+          "id": "426932f2-3578-4327-b334-61e1c0682602",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{dnz_api}}/records.json?text=Barbarossa&and[year][]=1905&per_page=50",
+              "host": [
+                "{{dnz_api}}"
+              ],
+              "path": [
+                "records.json"
+              ],
+              "query": [
+                {
+                  "key": "text",
+                  "value": "Barbarossa",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "and[year][]",
+                  "value": "1905",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "per_page",
+                  "value": "50",
+                  "disabled": false,
+                  "description": ""
+                }
+              ]
+            },
+            "description": "10 hits at build time.\n\nDocs: https://digitalnz.org/developers/api-docs-v3 · OpenAPI: https://app.swaggerhub.com/apis-docs/DigitalNZ/Records/3"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let j={};try{j=pm.response.json();}catch(e){}",
+                  "const s=j.search||{};",
+                  "const rows=(s.results||[]).map(r=>[`<a href=\"${r.source_url||r.landing_url||''}\">${(r.title||'').slice(0,140)}</a>`,r.display_date||'',r.display_collection||'',[].concat(r.category||[]).join(', '),r.content_partner&&[].concat(r.content_partner).join(', ')||'',r.id]);",
+                  "pm.visualizer.set(`<style>table{border-collapse:collapse;font:13px sans-serif}td,th{border:1px solid #ccc;padding:4px 8px;vertical-align:top}th{background:#eee}</style><p>{{n}} results</p><table><tr><th>Title</th><th>Date</th><th>Collection</th><th>Category</th><th>Partner</th><th>id</th></tr>{{#each rows}}<tr>{{#each this}}<td>{{{this}}}</td>{{/each}}</tr>{{/each}}</table>`,{rows,n:s.result_count});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "★ Papers Past: family notices style search",
+          "id": "736b0613-92f5-4f3b-83ce-0937a034addb",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{dnz_api}}/records.json?text={{query}} death OR marriage OR birth&and[display_collection][]=Papers Past&per_page=50",
+              "host": [
+                "{{dnz_api}}"
+              ],
+              "path": [
+                "records.json"
+              ],
+              "query": [
+                {
+                  "key": "text",
+                  "value": "{{query}} death OR marriage OR birth",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "and[display_collection][]",
+                  "value": "Papers Past",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "per_page",
+                  "value": "50",
+                  "disabled": false,
+                  "description": ""
+                }
+              ]
+            },
+            "description": "\n\nDocs: https://digitalnz.org/developers/api-docs-v3 · OpenAPI: https://app.swaggerhub.com/apis-docs/DigitalNZ/Records/3"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let j={};try{j=pm.response.json();}catch(e){}",
+                  "const s=j.search||{};",
+                  "const rows=(s.results||[]).map(r=>[`<a href=\"${r.source_url||r.landing_url||''}\">${(r.title||'').slice(0,140)}</a>`,r.display_date||'',r.display_collection||'',[].concat(r.category||[]).join(', '),r.content_partner&&[].concat(r.content_partner).join(', ')||'',r.id]);",
+                  "pm.visualizer.set(`<style>table{border-collapse:collapse;font:13px sans-serif}td,th{border:1px solid #ccc;padding:4px 8px;vertical-align:top}th{background:#eee}</style><p>{{n}} results</p><table><tr><th>Title</th><th>Date</th><th>Collection</th><th>Category</th><th>Partner</th><th>id</th></tr>{{#each rows}}<tr>{{#each this}}<td>{{{this}}}</td>{{/each}}</tr>{{/each}}</table>`,{rows,n:s.result_count});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Facet counts only",
+          "id": "460daa9d-f18e-472f-a4a6-3ed6f03f2e23",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{dnz_api}}/records.json?text={{query}}&per_page=0&facets=display_collection,decade,category,placename&facets_per_page=20",
+              "host": [
+                "{{dnz_api}}"
+              ],
+              "path": [
+                "records.json"
+              ],
+              "query": [
+                {
+                  "key": "text",
+                  "value": "{{query}}",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "per_page",
+                  "value": "0",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "facets",
+                  "value": "display_collection,decade,category,placename",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "facets_per_page",
+                  "value": "20",
+                  "disabled": false,
+                  "description": ""
+                }
+              ]
+            },
+            "description": "Counts by collection, decade, category and place without returning records.\n\nDocs: https://digitalnz.org/developers/api-docs-v3 · OpenAPI: https://app.swaggerhub.com/apis-docs/DigitalNZ/Records/3"
+          },
+          "response": []
+        },
+        {
+          "name": "Wellington region bounding box",
+          "id": "5f6d2fd4-fc4f-4704-b3d7-0634c3db3637",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{dnz_api}}/records.json?text={{query}}&geo_bbox=-41,174,-42,175&per_page=50",
+              "host": [
+                "{{dnz_api}}"
+              ],
+              "path": [
+                "records.json"
+              ],
+              "query": [
+                {
+                  "key": "text",
+                  "value": "{{query}}",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "geo_bbox",
+                  "value": "-41,174,-42,175",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "per_page",
+                  "value": "50",
+                  "disabled": false,
+                  "description": ""
+                }
+              ]
+            },
+            "description": "Geographic search (north,west,south,east).\n\nDocs: https://digitalnz.org/developers/api-docs-v3 · OpenAPI: https://app.swaggerhub.com/apis-docs/DigitalNZ/Records/3"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let j={};try{j=pm.response.json();}catch(e){}",
+                  "const s=j.search||{};",
+                  "const rows=(s.results||[]).map(r=>[`<a href=\"${r.source_url||r.landing_url||''}\">${(r.title||'').slice(0,140)}</a>`,r.display_date||'',r.display_collection||'',[].concat(r.category||[]).join(', '),r.content_partner&&[].concat(r.content_partner).join(', ')||'',r.id]);",
+                  "pm.visualizer.set(`<style>table{border-collapse:collapse;font:13px sans-serif}td,th{border:1px solid #ccc;padding:4px 8px;vertical-align:top}th{background:#eee}</style><p>{{n}} results</p><table><tr><th>Title</th><th>Date</th><th>Collection</th><th>Category</th><th>Partner</th><th>id</th></tr>{{#each rows}}<tr>{{#each this}}<td>{{{this}}}</td>{{/each}}</tr>{{/each}}</table>`,{rows,n:s.result_count});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Commercial-use partners list",
+          "id": "e406aa00-16e9-4d8e-ba13-112528aa9e32",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{dnz_api}}/records.json?and[is_commercial_use]=true&facets=content_partner&per_page=1&facets_per_page=350&fields=is_commercial_use",
+              "host": [
+                "{{dnz_api}}"
+              ],
+              "path": [
+                "records.json"
+              ],
+              "query": [
+                {
+                  "key": "and[is_commercial_use]",
+                  "value": "true",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "facets",
+                  "value": "content_partner",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "per_page",
+                  "value": "1",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "facets_per_page",
+                  "value": "350",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "fields",
+                  "value": "is_commercial_use",
+                  "disabled": false,
+                  "description": ""
+                }
+              ]
+            },
+            "description": "Which partners allow commercial reuse of metadata.\n\nDocs: https://digitalnz.org/developers/api-docs-v3 · OpenAPI: https://app.swaggerhub.com/apis-docs/DigitalNZ/Records/3"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Record metadata",
+      "id": "4e2d0469-c27c-4a72-a78d-7eb53cf6b128",
+      "item": [
+        {
+          "name": "Get record metadata",
+          "id": "71ba2ffc-759b-467a-b6f0-209d85f8dd89",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{dnz_api}}/records/{{record_id}}.json",
+              "host": [
+                "{{dnz_api}}"
+              ],
+              "path": [
+                "records",
+                "{{record_id}}.json"
+              ],
+              "query": [
+                {
+                  "key": "fields",
+                  "value": "verbose",
+                  "disabled": true,
+                  "description": "default | verbose or a comma list"
+                },
+                {
+                  "key": "api_key",
+                  "value": "{{dnz_key}}",
+                  "disabled": true,
+                  "description": ""
+                }
+              ]
+            },
+            "description": "record_id from search results (e.g. 37757055).\n\nDocs: https://digitalnz.org/developers/api-docs-v3 · OpenAPI: https://app.swaggerhub.com/apis-docs/DigitalNZ/Records/3"
+          },
+          "response": []
+        },
+        {
+          "name": "Get record — selected fields",
+          "id": "bd242a80-0ac3-4835-bd45-03715349ebfa",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{dnz_api}}/records/{{record_id}}.json?fields=title,description,creator,collection_title,display_date,source_url",
+              "host": [
+                "{{dnz_api}}"
+              ],
+              "path": [
+                "records",
+                "{{record_id}}.json"
+              ],
+              "query": [
+                {
+                  "key": "fields",
+                  "value": "title,description,creator,collection_title,display_date,source_url",
+                  "disabled": false,
+                  "description": ""
+                }
+              ]
+            },
+            "description": "\n\nDocs: https://digitalnz.org/developers/api-docs-v3 · OpenAPI: https://app.swaggerhub.com/apis-docs/DigitalNZ/Records/3"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "dnz_api",
+      "value": "https://api.digitalnz.org/v3",
+      "type": "string"
+    },
+    {
+      "key": "dnz_key",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "query",
+      "value": "Bukovsky",
+      "type": "string"
+    },
+    {
+      "key": "record_id",
+      "value": "37757055",
+      "type": "string"
+    }
+  ]
+}
